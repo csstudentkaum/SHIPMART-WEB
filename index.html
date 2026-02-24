@@ -1,0 +1,230 @@
+<!--
+Students names | IDs:
+    - Sama Salem Saloum | 2205679
+    - 
+    -
+
+Section: CPCS403
+Date: 24-02-2026
+File: index.html
+Purpose: Home page for ShipSmart (Universal Shipment Tracker)
+-->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ShipSmart | Universal Shipment Tracker</title>
+
+  <!-- Global styles -->
+  <link rel="stylesheet" href="global/main.css" />
+  <!-- Print styles (only the schedule table should print; handled in print.css by Member C) -->
+  <link rel="stylesheet" href="global/print.css" media="print" />
+</head>
+
+<body>
+  <!-- ===== Header ===== -->
+  <header class="site-header">
+    <div class="container header-inner">
+      <a class="brand" href="index.html" aria-label="ShipSmart Home">
+        <img src="images/ShipSmart.png" alt="ShipSmart logo" class="brand-logo" />
+        <span class="brand-name">ShipSmart</span>
+      </a>
+
+      <!-- ===== Navigation (keep consistent across all pages) ===== -->
+      <nav class="nav" aria-label="Main navigation">
+        <ul class="nav-list">
+          <li><a class="nav-link active" href="index.html">Home</a></li>
+          <li><a class="nav-link" href="pages/services.html">Services</a></li>
+          <li><a class="nav-link" href="pages/schedule.html">Schedule</a></li>
+          <li><a class="nav-link" href="pages/about.html">About</a></li>
+          <li><a class="nav-link" href="pages/feedback.html">Feedback</a></li>
+        </ul>
+      </nav>
+
+      <!-- Mobile menu button -->
+      <button class="nav-toggle" type="button" aria-label="Open menu" aria-expanded="false">
+        ☰
+      </button>
+    </div>
+  </header>
+
+  <!-- ===== Main ===== -->
+  <main>
+    <!-- ===== Hero ===== -->
+    <section class="hero">
+      <div class="container hero-grid">
+        <div class="hero-text">
+          <h1>Track shipments from multiple carriers in one place</h1>
+          <p class="lead">
+            Enter your tracking number, choose the carrier, and view shipment status,
+            estimated delivery date, and a progress timeline — instantly.
+          </p>
+
+          <ul class="hero-badges">
+            <li>Aramex</li>
+            <li>DHL</li>
+            <li>FedEx</li>
+            <li>SMSA</li>
+          </ul>
+        </div>
+
+        <div class="hero-card">
+          <!-- ===== Tracking Form ===== -->
+          <form id="trackForm" class="card" action="server/track.php" method="POST" novalidate>
+            <h2 class="card-title">Track Your Shipment</h2>
+
+            <!-- Tracking number -->
+            <div class="field">
+              <label for="trackingNumber">Tracking Number</label>
+              <input
+                type="text"
+                id="trackingNumber"
+                name="trackingNumber"
+                placeholder="e.g., DHL123456789"
+                autocomplete="off"
+                required
+              />
+              <small class="hint">Use letters/numbers only. Minimum 6 characters.</small>
+              <p class="error" id="trackingError" aria-live="polite"></p>
+            </div>
+
+            <!-- Carrier selection -->
+            <div class="field">
+              <label for="carrier">Carrier</label>
+              <select id="carrier" name="carrier" required>
+                <option value="" disabled selected>Select a carrier</option>
+                <option value="aramex">Aramex</option>
+                <option value="dhl">DHL</option>
+                <option value="fedex">FedEx</option>
+                <option value="smsa">SMSA</option>
+              </select>
+              <p class="error" id="carrierError" aria-live="polite"></p>
+            </div>
+
+            <!-- JS Demo mode toggle (optional) -->
+            <div class="field inline">
+              <input type="checkbox" id="demoMode" name="demoMode" />
+              <label for="demoMode">Demo mode (show sample result on this page)</label>
+            </div>
+
+            <button type="submit" class="btn primary" id="trackBtn">
+              Track Now
+            </button>
+
+            <p class="form-note">
+              Tip: For the class demo, enable <strong>Demo mode</strong> to show a sample timeline without APIs.
+            </p>
+          </form>
+
+          <!-- ===== Loading / Result Area (JS) ===== -->
+          <div id="resultArea" class="card result" hidden>
+            <div class="result-header">
+              <h2 class="card-title">Shipment Status</h2>
+              <span id="statusBadge" class="badge">Loading</span>
+            </div>
+
+            <div class="result-grid">
+              <div>
+                <p class="meta"><strong>Carrier:</strong> <span id="rCarrier">—</span></p>
+                <p class="meta"><strong>Tracking #:</strong> <span id="rTracking">—</span></p>
+              </div>
+              <div>
+                <p class="meta"><strong>Estimated Delivery:</strong> <span id="rEta">—</span></p>
+                <p class="meta"><strong>Last Update:</strong> <span id="rUpdate">—</span></p>
+              </div>
+            </div>
+
+            <!-- Progress timeline -->
+            <ol class="timeline" aria-label="Shipment progress timeline">
+              <li class="timeline-step" data-step="created">
+                <span class="dot"></span>
+                <span class="label">Shipment Created</span>
+              </li>
+              <li class="timeline-step" data-step="picked">
+                <span class="dot"></span>
+                <span class="label">Picked Up</span>
+              </li>
+              <li class="timeline-step" data-step="transit">
+                <span class="dot"></span>
+                <span class="label">In Transit</span>
+              </li>
+              <li class="timeline-step" data-step="out">
+                <span class="dot"></span>
+                <span class="label">Out for Delivery</span>
+              </li>
+              <li class="timeline-step" data-step="delivered">
+                <span class="dot"></span>
+                <span class="label">Delivered</span>
+              </li>
+            </ol>
+
+            <div class="result-actions">
+              <button class="btn" type="button" id="newSearchBtn">New Search</button>
+              <a class="btn ghost" href="pages/feedback.html">Leave Feedback</a>
+            </div>
+          </div>
+
+          <!-- Loading indicator -->
+          <div id="loadingBox" class="loading" hidden>
+            <div class="spinner" aria-hidden="true"></div>
+            <p>Checking shipment status…</p>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== Features quick section ===== -->
+    <section class="features">
+      <div class="container">
+        <h2>Why ShipSmart?</h2>
+        <div class="feature-grid">
+          <article class="feature">
+            <h3>All carriers in one place</h3>
+            <p>Track Aramex, DHL, FedEx, SMSA and more without switching websites.</p>
+          </article>
+          <article class="feature">
+            <h3>Clear progress timeline</h3>
+            <p>See your shipment stage visually: created → transit → delivered.</p>
+          </article>
+          <article class="feature">
+            <h3>Fast & simple</h3>
+            <p>Clean UI, instant results, and smart input checks using JavaScript.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== Footer note section ===== -->
+    <section class="note">
+      <div class="container">
+        <blockquote>
+          “A single tracking hub saves time and reduces confusion — especially when you order from multiple stores.”
+          <cite>— ShipSmart Team</cite>
+        </blockquote>
+
+        <address>
+          Contact: <a href="mailto:shipsmart.team@example.com">shipsmart.team@example.com</a>
+        </address>
+      </div>
+    </section>
+  </main>
+
+  <!-- ===== Footer ===== -->
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <p>&copy; 2026 ShipSmart. All rights reserved.</p>
+      <p class="footer-links">
+        <a href="pages/about.html">About</a>
+        <span aria-hidden="true">•</span>
+        <a href="pages/feedback.html">Feedback</a>
+      </p>
+    </div>
+  </footer>
+
+  <!-- Global script -->
+  <script src="scripts/main.js"></script>
+</body>
+</html>
