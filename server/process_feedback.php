@@ -14,8 +14,9 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     exit;
 }
 
-// ── Include database connection ──
+// ── Include database connection and email helper ──
 require_once __DIR__ . '/db_config.php';
+require_once __DIR__ . '/includes/mailer.php';
 
 // ── Read & sanitize input ──
 $fullName = trim($_POST['fullName']  ?? '');
@@ -99,18 +100,73 @@ if (!$stmt) {
 
 $stmt->bind_param('ssssss', $fullName, $email, $rating, $services, $carrier, $comments);
 
-if ($stmt->execute()) {
-    $newId = $stmt->insert_id;
-    echo json_encode([
-        'success' => true,
-        'message' => 'Thank you! Your feedback has been saved.',
-        'id'      => $newId
-    ]);
-} else {
+if (!$stmt->execute()) {
     http_response_code(500);
     echo json_encode(['success' => false, 'message' => 'Failed to save feedback: ' . $stmt->error]);
+    $stmt->close();
+    $conn->close();
+    exit;
 }
 
+$newId = $stmt->insert_id;
 $stmt->close();
 $conn->close();
+
+// ── Send confirmation email to the user ──
+$ratingLabel    = ucfirst($rating);   // e.g. "Good", "Average", "Poor"
+$carrierLabel   = strtoupper($carrier); // e.g. "ARAMEX", "DHL"
+$servicesLabel  = implode(', ', array_map('ucfirst', explode(',', $services)));
+$safeComments   = $comments !== '' ? nl2br(htmlspecialchars($comments, ENT_QUOTES, 'UTF-8'))
+                                   : '<em style="color:#888;">No comments provided.</em>';
+$safeName       = htmlspecialchars($fullName, ENT_QUOTES, 'UTF-8');
+
+$emailBody = <<<HTML
+<p style="margin:0 0 16px;color:#444;line-height:1.6;">
+  Hi <strong>{$safeName}</strong>,<br />
+  Thank you for taking the time to share your feedback with us.
+  Here is a summary of what you submitted:
+</p>
+
+<table width="100%" cellpadding="0" cellspacing="0"
+       style="border-collapse:collapse;font-size:14px;margin-bottom:20px;">
+  <tr style="background:#f8f4fb;">
+    <td style="padding:10px 14px;border:1px solid #ece6f0;
+               font-weight:600;color:#7b2b6a;width:40%;">Rating</td>
+    <td style="padding:10px 14px;border:1px solid #ece6f0;color:#333;">{$ratingLabel}</td>
+  </tr>
+  <tr>
+    <td style="padding:10px 14px;border:1px solid #ece6f0;
+               font-weight:600;color:#7b2b6a;">Services Used</td>
+    <td style="padding:10px 14px;border:1px solid #ece6f0;color:#333;">{$servicesLabel}</td>
+  </tr>
+  <tr style="background:#f8f4fb;">
+    <td style="padding:10px 14px;border:1px solid #ece6f0;
+               font-weight:600;color:#7b2b6a;">Preferred Carrier</td>
+    <td style="padding:10px 14px;border:1px solid #ece6f0;color:#333;">{$carrierLabel}</td>
+  </tr>
+  <tr>
+    <td style="padding:10px 14px;border:1px solid #ece6f0;
+               font-weight:600;color:#7b2b6a;">Comments</td>
+    <td style="padding:10px 14px;border:1px solid #ece6f0;color:#333;">{$safeComments}</td>
+  </tr>
+</table>
+
+<p style="margin:0 0 10px;color:#444;line-height:1.6;">
+  We review all feedback carefully to improve ShipSmart.
+  If you have any further questions, feel free to contact us.
+</p>
+<p style="margin:0;color:#444;">— The ShipSmart Team</p>
+HTML;
+
+$emailHtml  = buildEmailTemplate("Thank you for your feedback!", $emailBody);
+$emailSent  = sendMail($email, $fullName, "Thank you for your feedback, {$fullName}!", $emailHtml);
+
+// ── Return response (include emailSent status so frontend can show a note) ──
+echo json_encode([
+    'success'    => true,
+    'message'    => 'Thank you! Your feedback has been saved.',
+    'id'         => $newId,
+    'emailSent'  => $emailSent,
+    'emailError' => $emailSent ? null : 'Feedback saved, but confirmation email could not be sent.'
+]);
 ?>

@@ -1,0 +1,245 @@
+<!--
+Name: Sama Salem Saloum
+ID: 2205679
+Section: CPCS403
+Date: 31-05-2026
+File: pages/upload.html
+Purpose: ShipSmart Upload Page — attach shipment documents (invoice, receipt, proof of delivery)
+-->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ShipSmart | Upload Document</title>
+  <link rel="icon" type="image/svg+xml" href="../images/shipsmart-logo-3.svg" />
+
+  <!-- External CSS -->
+  <link rel="stylesheet" href="../global/main.css" />
+</head>
+
+<body>
+  <!-- ===================== HEADER ===================== -->
+  <header class="site-header">
+    <div class="container header-inner">
+      <a class="brand" href="../index.html" aria-label="ShipSmart Home">
+        <img class="brand-logo" src="../images/shipsmart-logo-3.svg" alt="ShipSmart logo" />
+        <span class="brand-name">ShipSmart</span>
+      </a>
+
+      <nav class="nav" aria-label="Main navigation">
+        <ul class="nav-list">
+          <li><a class="nav-link" href="../index.html">Home</a></li>
+          <li><a class="nav-link" href="services.html">Services</a></li>
+          <li><a class="nav-link" href="schedule.html">Schedule</a></li>
+          <li><a class="nav-link" href="search.html">Search</a></li>
+          <li><a class="nav-link is-active" href="upload.html">Upload</a></li>
+          <li><a class="nav-link" href="video.html">Video</a></li>
+          <li><a class="nav-link" href="feedback.html">Feedback</a></li>
+        </ul>
+      </nav>
+
+      <button class="nav-toggle" type="button" aria-label="Open menu" aria-expanded="false">
+        ☰
+      </button>
+    </div>
+  </header>
+
+  <!-- ===================== MAIN ===================== -->
+  <main>
+
+    <!-- Page heading -->
+    <section class="section page-hero">
+      <div class="container">
+        <h1>Upload Shipment Document</h1>
+        <p class="muted">
+          Attach an invoice, receipt, or proof of delivery to your shipment record.
+          Accepted formats: JPG, PNG, PDF — maximum file size 2 MB.
+        </p>
+      </div>
+    </section>
+
+    <!-- Upload section -->
+    <section class="section">
+      <div class="container upload-layout">
+
+        <!-- ── Upload form card ── -->
+        <div class="upload-form-wrap">
+          <form
+            id="uploadForm"
+            class="card upload-card"
+            action="../api/upload-document.php"
+            method="POST"
+            enctype="multipart/form-data"
+            novalidate
+          >
+            <h2 class="upload-card-title">Document Details</h2>
+
+            <!-- Tracking Number -->
+            <div class="field">
+              <label for="trackingNumber">Tracking Number <span class="req">*</span></label>
+              <input
+                id="trackingNumber"
+                name="tracking_number"
+                type="text"
+                placeholder="e.g., ARX1002345678"
+                autocomplete="off"
+                required
+              />
+              <p class="error" id="trackingError" aria-live="polite"></p>
+            </div>
+
+            <!-- Carrier -->
+            <div class="field">
+              <label for="carrier">Carrier <span class="req">*</span></label>
+              <select id="carrier" name="carrier" required>
+                <option value="" disabled selected>Select carrier</option>
+                <option value="aramex">Aramex</option>
+                <option value="dhl">DHL</option>
+                <option value="fedex">FedEx</option>
+                <option value="smsa">SMSA</option>
+              </select>
+              <p class="error" id="carrierError" aria-live="polite"></p>
+            </div>
+
+            <!-- Document Type -->
+            <div class="field">
+              <label for="docType">Document Type <span class="req">*</span></label>
+              <select id="docType" name="doc_type" required>
+                <option value="" disabled selected>Select document type</option>
+                <option value="invoice">Invoice</option>
+                <option value="receipt">Receipt</option>
+                <option value="proof_of_delivery">Proof of Delivery</option>
+                <option value="other">Other</option>
+              </select>
+              <p class="error" id="docTypeError" aria-live="polite"></p>
+            </div>
+
+            <!-- File input with drag-and-drop zone -->
+            <div class="field">
+              <label>File <span class="req">*</span></label>
+              <div class="drop-zone" id="dropZone" role="button" tabindex="0" aria-label="Click or drag a file here to upload">
+                <img src="../images/shipsmart-logo-3.svg" alt="" aria-hidden="true" class="drop-icon" />
+                <p class="drop-text">Drag &amp; drop your file here, or <span class="drop-browse">browse</span></p>
+                <p class="drop-hint">JPG, PNG, PDF — max 2 MB</p>
+                <input
+                  id="documentFile"
+                  name="document"
+                  type="file"
+                  accept=".jpg,.jpeg,.png,.pdf"
+                  class="file-input"
+                  required
+                  aria-label="Choose file to upload"
+                />
+              </div>
+
+              <!-- File preview label -->
+              <p class="file-chosen" id="fileChosen" hidden></p>
+              <p class="error" id="fileError" aria-live="polite"></p>
+            </div>
+
+            <!-- Optional email for upload confirmation -->
+            <div class="field">
+              <label for="uploaderEmail">Your Email <span class="hint-label">(optional — receive upload confirmation)</span></label>
+              <input
+                id="uploaderEmail"
+                name="uploader_email"
+                type="email"
+                placeholder="e.g., sara@example.com"
+                autocomplete="email"
+              />
+              <p class="error" id="emailError" aria-live="polite"></p>
+            </div>
+
+            <!-- Submit -->
+            <button class="btn btn-primary" type="submit" id="uploadBtn">
+              Upload Document
+            </button>
+          </form>
+
+          <!-- ── Success card (shown after successful upload) ── -->
+          <div id="uploadSuccess" class="card upload-success" hidden>
+            <div class="success-icon" aria-hidden="true">✓</div>
+            <h2>Document Uploaded!</h2>
+            <p id="successMsg" class="muted"></p>
+
+            <div class="success-meta" id="successMeta"></div>
+
+            <button class="btn btn-primary" id="uploadAnotherBtn" type="button">
+              Upload Another Document
+            </button>
+          </div>
+        </div>
+
+        <!-- ── Info sidebar ── -->
+        <aside class="upload-info card">
+          <h3>What can I upload?</h3>
+          <ul class="check-list">
+            <li><img src="../images/pink check.svg" alt="" aria-hidden="true" /> Invoice (PDF or image)</li>
+            <li><img src="../images/pink check.svg" alt="" aria-hidden="true" /> Shipment receipt</li>
+            <li><img src="../images/pink check.svg" alt="" aria-hidden="true" /> Proof of delivery photo</li>
+            <li><img src="../images/pink check.svg" alt="" aria-hidden="true" /> Any related document</li>
+          </ul>
+
+          <hr class="divider" />
+
+          <h3>File Requirements</h3>
+          <ul>
+            <li>Formats: <strong>JPG, PNG, PDF</strong></li>
+            <li>Max size: <strong>2 MB</strong></li>
+            <li>One file per submission</li>
+          </ul>
+
+          <hr class="divider" />
+
+          <h3>Recently Uploaded</h3>
+          <p class="muted small" id="recentInfo">No documents uploaded yet this session.</p>
+        </aside>
+
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ===================== FOOTER ===================== -->
+  <footer class="site-footer">
+    <div class="container footer-grid">
+      <div>
+        <div class="footer-brand">
+          <img class="footer-logo" src="../images/shipsmart-logo-3.svg" alt="ShipSmart logo" />
+          <strong>ShipSmart</strong>
+        </div>
+        <p class="muted small">Universal Shipment Tracker — a course project for CPCS 403.</p>
+        <p class="small">&copy; 2026 ShipSmart. All rights reserved.</p>
+      </div>
+
+      <div>
+        <p class="footer-title">Pages</p>
+        <ul class="footer-links">
+          <li><a href="services.html">Services</a></li>
+          <li><a href="schedule.html">Schedule</a></li>
+          <li><a href="upload.html">Upload</a></li>
+          <li><a href="video.html">Video</a></li>
+          <li><a href="feedback.html">Feedback</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <p class="footer-title">Social</p>
+        <div class="social">
+          <a href="#" aria-label="Instagram"><img src="../images/instagram-logo.svg" alt="" aria-hidden="true" /></a>
+          <a href="#" aria-label="Facebook"><img src="../images/facebook-logo.svg" alt="" aria-hidden="true" /></a>
+          <a href="#" aria-label="Pinterest"><img src="../images/pinterest-logo.svg" alt="" aria-hidden="true" /></a>
+          <a href="#" aria-label="X"><img src="../images/x-logo.svg" alt="" aria-hidden="true" /></a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Main JS (nav toggle) -->
+  <script src="../scripts/main.js"></script>
+  <!-- Upload-specific JS -->
+  <script src="../scripts/upload.js"></script>
+</body>
+</html>

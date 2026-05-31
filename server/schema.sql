@@ -57,3 +57,18 @@ INSERT INTO shipments (tracking_number, carrier, origin_city, destination_city, 
 ('FDX5522990011', 'fedex', 'Abha', 'Jeddah', 'delivered', 'standard', 2.90, '2026-05-26', '2026-05-26 15:45:00'),
 ('SMSA8800123498', 'smsa', 'Jeddah', 'Riyadh', 'picked_up', 'express', 1.10, '2026-06-03', '2026-05-31 13:20:00'),
 ('ARX1007778888', 'aramex', 'Riyadh', 'Dubai', 'created', 'freight', 200.00, '2026-06-12', '2026-05-31 07:00:00');
+
+-- ============================================================
+-- Shipment documents table (File Upload System)
+-- ============================================================
+CREATE TABLE IF NOT EXISTS shipment_documents (
+  id              INT AUTO_INCREMENT PRIMARY KEY,
+  tracking_number VARCHAR(50)   NOT NULL,
+  carrier         ENUM('aramex','dhl','fedex','smsa') NOT NULL,
+  doc_type        ENUM('invoice','receipt','proof_of_delivery','other') NOT NULL,
+  original_name   VARCHAR(255)  NOT NULL  COMMENT 'Original filename from the user',
+  saved_name      VARCHAR(255)  NOT NULL  COMMENT 'Renamed file stored on disk',
+  file_size       INT UNSIGNED  NOT NULL  COMMENT 'Size in bytes',
+  mime_type       VARCHAR(100)  NOT NULL,
+  uploaded_at     DATETIME      DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
