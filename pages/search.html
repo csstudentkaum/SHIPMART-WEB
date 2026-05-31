@@ -1,0 +1,180 @@
+<!--
+Name: ShipSmart Team
+Section: CPCS403
+Date: 2026-05-31
+File: pages/search.html
+Purpose: ShipSmart Search Page — live shipment search and filtering
+-->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ShipSmart | Search Shipments</title>
+
+  <link rel="stylesheet" href="../global/main.css">
+  <link rel="stylesheet" href="../global/print.css" media="print">
+</head>
+
+<body>
+  <header class="site-header">
+    <div class="container header-inner">
+      <a class="brand" href="../index.html" aria-label="ShipSmart Home">
+        <img class="brand-logo" src="../images/shipsmart-logo-3.svg" alt="ShipSmart logo">
+        <span class="brand-name">ShipSmart</span>
+      </a>
+
+      <nav class="nav" aria-label="Main navigation">
+        <ul class="nav-list">
+          <li><a class="nav-link" href="../index.html">Home</a></li>
+          <li><a class="nav-link" href="services.html">Services</a></li>
+          <li><a class="nav-link" href="schedule.html">Schedule</a></li>
+          <li><a class="nav-link is-active" href="search.html">Search</a></li>
+          <li><a class="nav-link" href="video.html">Video</a></li>
+          <li><a class="nav-link" href="feedback.html">Feedback</a></li>
+        </ul>
+      </nav>
+
+      <button class="nav-toggle" type="button" aria-label="Open menu" aria-expanded="false">
+        ☰
+      </button>
+    </div>
+  </header>
+
+  <main>
+    <section class="section page-hero">
+      <div class="container">
+        <h1>Search Shipments</h1>
+        <p class="muted">
+          Find shipments by tracking number, city, carrier, status, category, or estimated delivery date.
+        </p>
+      </div>
+    </section>
+
+    <section class="section search-section">
+      <div class="container">
+        <!-- Search bar -->
+        <form id="searchForm" class="search-bar card" role="search" aria-label="Shipment search">
+          <label class="sr-only" for="searchQuery">Search keyword</label>
+          <input
+            id="searchQuery"
+            type="text"
+            placeholder="Search by tracking number, origin, or destination…"
+            autocomplete="off"
+          />
+          <button class="btn btn-primary search-submit" type="submit" id="searchBtn">Search</button>
+        </form>
+
+        <div class="search-layout">
+          <!-- Filters -->
+          <aside class="filter-panel card" aria-label="Search filters">
+            <h2 class="filter-title">Filters</h2>
+
+            <div class="filter-group">
+              <label for="filterCarrier">Carrier</label>
+              <select id="filterCarrier">
+                <option value="">All</option>
+                <option value="aramex">Aramex</option>
+                <option value="dhl">DHL</option>
+                <option value="fedex">FedEx</option>
+                <option value="smsa">SMSA</option>
+              </select>
+            </div>
+
+            <div class="filter-group">
+              <label for="filterStatus">Status</label>
+              <select id="filterStatus">
+                <option value="">All</option>
+                <option value="created">Created</option>
+                <option value="picked_up">Picked Up</option>
+                <option value="in_transit">In Transit</option>
+                <option value="out_for_delivery">Out for Delivery</option>
+                <option value="delivered">Delivered</option>
+              </select>
+            </div>
+
+            <div class="filter-group">
+              <label for="filterCategory">Category</label>
+              <select id="filterCategory">
+                <option value="">All</option>
+                <option value="standard">Standard</option>
+                <option value="express">Express</option>
+                <option value="freight">Freight</option>
+              </select>
+            </div>
+
+            <fieldset class="filter-fieldset">
+              <legend>Estimated Delivery</legend>
+              <div class="filter-group">
+                <label for="dateFrom">From</label>
+                <input id="dateFrom" type="date">
+              </div>
+              <div class="filter-group">
+                <label for="dateTo">To</label>
+                <input id="dateTo" type="date">
+              </div>
+            </fieldset>
+
+            <button class="btn btn-ghost filter-clear" type="button" id="clearFiltersBtn">Clear Filters</button>
+          </aside>
+
+          <!-- Results -->
+          <div class="search-results-wrap">
+            <div class="search-results-head">
+              <p id="resultCount" class="result-count muted">Showing 0 results</p>
+              <div id="searchLoading" class="search-loading" hidden>
+                <span class="spinner" aria-hidden="true"></span>
+                <span>Loading shipments…</span>
+              </div>
+            </div>
+
+            <p id="noResults" class="no-results card" hidden>No shipments found</p>
+
+            <div id="searchResults" class="search-results" aria-live="polite"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-grid">
+      <div>
+        <div class="footer-brand">
+          <img class="footer-logo" src="../images/shipsmart-logo-3.svg" alt="ShipSmart logo">
+          <strong>ShipSmart</strong>
+        </div>
+        <p class="muted small">
+          Universal Shipment Tracker — a course project for CPCS 403.
+        </p>
+        <p class="small">&copy; 2026 ShipSmart. All rights reserved.</p>
+      </div>
+
+      <div>
+        <p class="footer-title">Pages</p>
+        <ul class="footer-links">
+          <li><a href="services.html">Services</a></li>
+          <li><a href="schedule.html">Schedule</a></li>
+          <li><a href="search.html">Search</a></li>
+          <li><a href="video.html">Video</a></li>
+          <li><a href="feedback.html">Feedback</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <p class="footer-title">Social</p>
+        <div class="social">
+          <a href="#" aria-label="Instagram"><img src="../images/instagram-logo.svg" alt="" aria-hidden="true"></a>
+          <a href="#" aria-label="Facebook"><img src="../images/facebook-logo.svg" alt="" aria-hidden="true"></a>
+          <a href="#" aria-label="Pinterest"><img src="../images/pinterest-logo.svg" alt="" aria-hidden="true"></a>
+          <a href="#" aria-label="X"><img src="../images/x-logo.svg" alt="" aria-hidden="true"></a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script src="../scripts/main.js"></script>
+  <script src="../scripts/search.js"></script>
+</body>
+</html>

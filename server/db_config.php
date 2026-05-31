@@ -7,7 +7,7 @@
 // ── Database credentials ──
 define('DB_HOST', 'localhost');
 define('DB_NAME', 'shipsmart_db');
-define('DB_USER', 'cpsc403');  // MariaDB user
+define('DB_USER', 'root');  // MariaDB user
 define('DB_PASS', '');              // no password
 
 // ── Create connection using MySQLi ──
