@@ -5,7 +5,10 @@ version: 1.0
 
 deploy:
   bootstrap:
-    excludes: []
+    excludes:
+      - generate_hashes.php
+      - test_tracking.php
+      - docs
 
   recurring:
     excludes:
