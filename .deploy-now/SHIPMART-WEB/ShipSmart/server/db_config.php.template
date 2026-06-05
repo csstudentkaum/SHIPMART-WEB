@@ -1,0 +1,27 @@
+<?php
+/*
+ * Rendered on IONOS deploy from Deploy Now secrets (workflow v2).
+ * Local dev uses server/db_config.php in the repo instead.
+ */
+
+define('DB_HOST', '$IONOS_DB_HOST');
+define('DB_NAME', '$IONOS_DB_NAME');
+define('DB_USER', '$IONOS_DB_USERNAME');
+define('DB_PASS', '$IONOS_DB_PASSWORD');
+
+$db_conn_error = null;
+try {
+    $conn = new mysqli(DB_HOST, DB_USER, DB_PASS, DB_NAME);
+} catch (mysqli_sql_exception $e) {
+    $conn = null;
+    $db_conn_error = $e->getMessage();
+}
+
+if (isset($conn) && $conn instanceof mysqli && $conn->connect_error) {
+    $db_conn_error = $conn->connect_error;
+    $conn = null;
+}
+
+if (isset($conn) && $conn instanceof mysqli) {
+    $conn->set_charset('utf8mb4');
+}
