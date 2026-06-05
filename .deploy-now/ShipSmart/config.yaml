@@ -14,3 +14,4 @@ deploy:
     excludes:
       - server/data
       - uploads
+      - server/config.php
